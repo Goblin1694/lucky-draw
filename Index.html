@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pendaftaran Undian Lucky Draw</title>
+    <style>
+        :root {
+            --primary-color: #4f46e5;
+            --primary-hover: #4338ca;
+            --bg-color: #f3f4f6;
+            --card-bg: #ffffff;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --border-color: #e5e7eb;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        h2, h3 {
+            text-align: center;
+            color: var(--primary-color);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background-color: var(--primary-hover);
+        }
+        .card-success {
+            background: #eef2ff;
+            border: 2px dashed var(--primary-color);
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .coupon-box {
+            font-size: 36px;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin: 10px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+        th, td {
+            padding: 10px;
+            border-bottom: 1px solid var(--border-color);
+            text-align: left;
+        }
+        th {
+            background-color: #f9fafb;
+            color: var(--text-muted);
+        }
+        .hidden {
+            display: none !important;
+        }
+        .loading {
+            text-align: center;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>🎉 Pendaftaran Lucky Draw</h2>
+
+    <!-- Form Pendaftaran -->
+    <div id="section-form">
+        <form id="regForm">
+            <div class="form-group">
+                <label for="nama">Nama Lengkap:</label>
+                <input type="text" id="nama" required placeholder="Masukkan nama lengkap Anda">
+            </div>
+            <div class="form-group">
+                <label for="instansi">Instansi / Desa:</label>
+                <input type="text" id="instansi" required placeholder="Masukkan asal instansi atau desa">
+            </div>
+            <button type="submit" id="submitBtn">Daftar Sekarang</button>
+        </form>
+    </div>
+
+    <!-- Tampilan Berhasil / Kupon Saya -->
+    <div id="section-success" class="hidden">
+        <div class="card-success">
+            <p>Pendaftaran Berhasil! Nomor Kupon Undian Anda:</p>
+            <div class="coupon-box" id="myCouponNumber">-</div>
+            <p><strong>Nama:</strong> <span id="myNama">-</span></p>
+            <p><strong>Instansi / Desa:</strong> <span id="myInstansi">-</span></p>
+            <small style="color: var(--text-muted);">Simpan nomor ini atau ingat nama Anda di daftar bawah.</small>
+        </div>
+    </div>
+
+    <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 30px 0;">
+
+    <!-- Daftar Peserta Publik -->
+    <div>
+        <h3>Daftar Peserta Terdaftar</h3>
+        <p style="text-align: center; font-size: 13px; color: var(--text-muted);">Transparansi daftar seluruh peserta yang sudah masuk.</p>
+        <div id="loadingText" class="loading">Memuat data peserta...</div>
+        <div style="overflow-x: auto;">
+            <table id="participantTable" class="hidden">
+                <thead>
+                    <tr>
+                        <th>No. Kupon</th>
+                        <th>Nama</th>
+                        <th>Instansi / Desa</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <!-- Data dimasukkan via Javascript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ⚠️ GANTI URL DI BAWAH INI DENGAN URL WEB APP GOOGLE APPS SCRIPT ANDA
+    const SCRIPT_URL = https://script.google.com/macros/s/AKfycbwYZYlId65GTY0dfUDsN6G4w7MszbNcG2T8R6FtfDnHBkhR863OjzVM4o3QhUx7qO78/exec;
+
+    const form = document.getElementById('regForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const sectionForm = document.getElementById('section-form');
+    const sectionSuccess = document.getElementById('section-success');
+    
+    const myCouponNumber = document.getElementById('myCouponNumber');
+    const myNama = document.getElementById('myNama');
+    const myInstansi = document.getElementById('myInstansi');
+    
+    const participantTable = document.getElementById('participantTable');
+    const tableBody = document.getElementById('tableBody');
+    const loadingText = document.getElementById('loadingText');
+
+    // Cek localStorage apakah sudah pernah mendaftar di perangkat ini
+    window.addEventListener('DOMContentLoaded', () => {
+        const savedCoupon = localStorage.getItem('lucky_coupon');
+        const savedNama = localStorage.getItem('lucky_nama');
+        const savedInstansi = localStorage.getItem('lucky_instansi');
+
+        if (savedCoupon) {
+            // Jika sudah terdaftar, sembunyikan form dan tampilkan kupon
+            sectionForm.classList.add('hidden');
+            sectionSuccess.classList.remove('hidden');
+            myCouponNumber.textContent = savedCoupon;
+            myNama.textContent = savedNama;
+            myInstansi.textContent = savedInstansi;
+        }
+
+        // Muat daftar peserta saat halaman dibuka
+        loadParticipants();
+    });
+
+    // Handle Submit Form
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Mengirim...";
+
+        const data = {
+            nama: document.getElementById('nama').value.trim(),
+            instansi: document.getElementById('instansi').value.trim()
+        };
+
+        fetch(SCRIPT_URL, {
+            method: 'POST',
+            body: JSON.stringify(data)
+        })
+        .then(res => res.json())
+        .then(response => {
+            if (response.status === 'success') {
+                // Simpan ke localStorage agar tahan refresh
+                localStorage.setItem('lucky_coupon', response.couponNumber);
+                localStorage.setItem('lucky_nama', response.nama);
+                localStorage.setItem('lucky_instansi', response.instansi);
+
+                // Tampilkan sukses
+                sectionForm.classList.add('hidden');
+                sectionSuccess.classList.remove('hidden');
+                myCouponNumber.textContent = response.couponNumber;
+                myNama.textContent = response.nama;
+                myInstansi.textContent = response.instansi;
+
+                // Refresh tabel peserta
+                loadParticipants();
+            } else {
+                alert('Gagal: ' + response.message);
+                submitBtn.disabled = false;
+                submitBtn.textContent = "Daftar Sekarang";
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Terjadi kesalahan jaringan. Silakan coba lagi.');
+            submitBtn.disabled = false;
+            submitBtn.textContent = "Daftar Sekarang";
+        });
+    });
+
+    // Fungsi Mengambil Daftar Peserta dari Google Sheets
+    function loadParticipants() {
+        fetch(SCRIPT_URL)
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'success') {
+                const participants = data.participants;
+                tableBody.innerHTML = '';
+
+                if (participants.length > 0) {
+                    // Urutkan dari yang terbaru atau biarkan sesuai urutan sekuensial
+                    participants.forEach(p => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td><strong>#${p.couponNumber}</strong></td>
+                            <td>${escapeHtml(p.nama)}</td>
+                            <td>${escapeHtml(p.instansi)}</td>
+                        `;
+                        tableBody.appendChild(tr);
+                    });
+                    loadingText.classList.add('hidden');
+                    participantTable.classList.remove('hidden');
+                } else {
+                    loadingText.textContent = "Belum ada peserta yang terdaftar.";
+                }
+            }
+        })
+        .catch(err => {
+            console.error('Gagal memuat peserta:', err);
+            loadingText.textContent = "Gagal memuat daftar peserta.";
+        });
+    }
+
+    // Fungsi keamanan sederhana untuk mencegah HTML Injection
+    function escapeHtml(str) {
+        return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    }
+</script>
+
+</body>
+</html>
